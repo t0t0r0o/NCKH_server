@@ -1,16 +1,18 @@
-const { PrismaClient } =  require("@prisma/client");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-
 const getPublicKeyByName = async (name) => {
-
   try {
-    const key = await prisma.publicKey.findUnique({
+    const record = await prisma.publicKey.findUnique({
       where: { name: name },
     });
 
-    if (key) {
-      return { status: true, data: key };
+    let objData = {
+      name: record.name,
+      key: record.key,
+    };
+    if (record) {
+      return { status: true, data: objData };
     }
     return { status: false, message: "Not Found" };
   } catch (err) {
@@ -23,21 +25,24 @@ const getPublicKeyByName = async (name) => {
 
 const createPublicKey = async (name, publickey) => {
   try {
-    const key = await prisma.publicKey.create({
+    const record = await prisma.publicKey.create({
       data: {
         name: name,
         key: publickey,
-        createdat: String((new Date().getTime() / 1000) - (new Date().getTime() % 1000)),
+        createdat: String(
+          new Date().getTime() / 1000 - (new Date().getTime() % 1000)
+        ),
       },
     });
-    console.log(key);
-    if (key) {
-      return { status: true, data: key };
+
+    if (record) {
+      console.log(record);
+      return { status: true, data: record };
     }
     return { status: false, message: "Created Failure" };
   } catch (err) {
     console.log(err);
-    return {isSuccess: false, error: err}
+    return { isSuccess: false, error: err };
   } finally {
     async () => await prisma.$disconnect();
   }
