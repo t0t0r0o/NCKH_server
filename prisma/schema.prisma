@@ -10,10 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model PublicKey {
   id            Int     @id @default(autoincrement())
   name          String? @unique
   key           String  @unique
   createdat     String
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  password String
+  email    String   @unique
+  createdAt DateTime @default(now())
 }
